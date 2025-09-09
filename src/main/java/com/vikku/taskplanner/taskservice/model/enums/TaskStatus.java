@@ -1,6 +1,6 @@
 package com.vikku.taskplanner.taskservice.model.enums;
 
-public enum TaskStaus {
+public enum TaskStatus {
     PENDING,
     IN_PROGRESS,
     COMPLETED

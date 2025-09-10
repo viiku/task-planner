@@ -2,6 +2,8 @@ package com.vikku.taskplanner.taskservice.controllers;
 
 import com.vikku.taskplanner.taskservice.model.dtos.TaskDto;
 import com.vikku.taskplanner.taskservice.model.dtos.request.TaskCreateRequest;
+import com.vikku.taskplanner.taskservice.model.dtos.request.TaskUpdateRequest;
+import com.vikku.taskplanner.taskservice.model.dtos.response.TaskResponse;
 import com.vikku.taskplanner.taskservice.model.enums.TaskStatus;
 import com.vikku.taskplanner.taskservice.model.enums.TaskType;
 import com.vikku.taskplanner.taskservice.service.TaskService;
@@ -38,7 +40,7 @@ public class TaskController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Update task")
-    public ResponseEntity<TaskDto> updateTask(@RequestBody TaskCreateRequest taskRequest) {
+    public ResponseEntity<TaskResponse> updateTask(@RequestBody TaskUpdateRequest taskRequest) {
         return ResponseEntity.ok(taskService.updateTask(taskRequest));
     }
 
@@ -53,7 +55,7 @@ public class TaskController {
     public ResponseEntity<List<TaskDto>> getAllTasks(
             @RequestParam(required = false) TaskType type,
             @RequestParam(required = false) TaskStatus status) {
-        return ResponseEntity.ok(taskService.getTasks(type, status));
+        return ResponseEntity.ok(taskService.getAllTasksByTypeAndStatus(type, status));
     }
 
     @GetMapping("/type")

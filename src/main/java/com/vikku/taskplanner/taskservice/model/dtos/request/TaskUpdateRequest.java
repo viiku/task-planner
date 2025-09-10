@@ -8,7 +8,9 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TaskCreateRequest {
+public class TaskUpdateRequest {
+
+    private Long taskId;
     private String name;
     private String problemId;
     private String description;

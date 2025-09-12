@@ -7,7 +7,6 @@ import com.vikku.taskplanner.taskservice.model.enums.TaskStatus;
 import com.vikku.taskplanner.taskservice.model.enums.TaskType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatform;
 
 @Entity
 @Getter
@@ -19,7 +18,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnCloudPlatfo
         name = "tasks",
         indexes = {
                 @Index(name = "idx_task_type_status", columnList = "taskType, taskStatus"),
-                @Index(name = "idx_due_date", columnList = "dueDate")
+//                @Index(name = "idx_due_date", columnList = "dueDate")
         }
 )
 public class TaskEntity extends BaseEntity {
@@ -28,11 +27,12 @@ public class TaskEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
-    @Column(nullable = false)
+    @Column(name = "task_id", nullable = false, unique = true)
+    private String taskId;
+
+    @Column(name = "task_name", nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
-    private String problemId;
     private String description;
 
     @Enumerated(EnumType.STRING)

@@ -28,39 +28,42 @@ public class TaskController {
 
     @PostMapping
     @Operation(summary = "Create a new task")
-    public ResponseEntity<TaskDto> createTask(@RequestBody TaskCreateRequest taskRequest) {
+    public ResponseEntity<TaskResponse> createTask(@RequestBody TaskCreateRequest taskRequest) {
         return ResponseEntity.ok(taskService.createTask(taskRequest));
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Get task")
-    public ResponseEntity<TaskDto> getTask(@PathVariable Long id) {
-        return ResponseEntity.ok(taskService.getTask(id));
+    @GetMapping("/{taskId}")
+    @Operation(summary = "Get task using taskId")
+    public ResponseEntity<TaskDto> getTask(@PathVariable String taskId) {
+        return ResponseEntity.ok(taskService.getTask(taskId));
     }
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Update task")
-    public ResponseEntity<TaskResponse> updateTask(@RequestBody TaskUpdateRequest taskRequest) {
-        return ResponseEntity.ok(taskService.updateTask(taskRequest));
+    @PutMapping("/{taskId}")
+    @Operation(summary = "Update task using taskId")
+    public ResponseEntity<TaskResponse> updateTask(
+            @PathVariable String taskId,
+            @RequestBody TaskUpdateRequest taskRequest) {
+        return ResponseEntity.ok(taskService.updateTask(taskId, taskRequest));
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Delete task")
-    public void deleteTask(@PathVariable Long id) {
-        taskService.deleteTask(id);
+    @DeleteMapping("/{taskId}")
+    @Operation(summary = "Delete task using taskId")
+    public void deleteTask(@PathVariable String taskId) {
+        taskService.deleteTask(taskId);
+    }
+
+    @GetMapping("/type")
+    @Operation(summary = "Get list of task by type")
+    public ResponseEntity<List<TaskDto>> getTaskByType(@RequestParam TaskType type) {
+        return ResponseEntity.ok(taskService.getTaskByType(type));
     }
 
     @GetMapping
-    @Operation(summary = "Get all task of all category")
+    @Operation(summary = "Get list of task by type and status")
     public ResponseEntity<List<TaskDto>> getAllTasks(
             @RequestParam(required = false) TaskType type,
             @RequestParam(required = false) TaskStatus status) {
         return ResponseEntity.ok(taskService.getAllTasksByTypeAndStatus(type, status));
     }
 
-    @GetMapping("/type")
-    @Operation(summary = "Get task by type")
-    public ResponseEntity<List<TaskDto>> getTaskByType(@RequestParam TaskType type) {
-        return ResponseEntity.ok(taskService.getTaskByType(type));
-    }
 }

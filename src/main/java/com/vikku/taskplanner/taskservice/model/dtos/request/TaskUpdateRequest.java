@@ -10,7 +10,6 @@ import lombok.*;
 @AllArgsConstructor
 public class TaskUpdateRequest {
 
-    private Long taskId;
     private String name;
     private String problemId;
     private String description;

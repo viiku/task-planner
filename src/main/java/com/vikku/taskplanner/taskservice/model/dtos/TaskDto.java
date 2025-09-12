@@ -12,7 +12,6 @@ import lombok.*;
 @AllArgsConstructor
 public class TaskDto {
     private String name;
-    private String problemId;
     private String description;
     private TaskType taskType;
     private TaskDifficulty taskDifficulty;

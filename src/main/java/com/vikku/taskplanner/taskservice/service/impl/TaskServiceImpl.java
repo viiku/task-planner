@@ -1,5 +1,7 @@
 package com.vikku.taskplanner.taskservice.service.impl;
 
+import com.vikku.taskplanner.taskservice.exceptions.TaskAlreadyExistException;
+import com.vikku.taskplanner.taskservice.exceptions.TaskListNotFoundException;
 import com.vikku.taskplanner.taskservice.exceptions.TaskNotFoundException;
 import com.vikku.taskplanner.taskservice.model.dtos.TaskDto;
 import com.vikku.taskplanner.taskservice.model.dtos.request.TaskCreateRequest;
@@ -20,8 +22,8 @@ import java.util.List;
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
+    private final TaskRepository taskRepository;
 
     public TaskServiceImpl(TaskRepository taskRepository, TaskMapper taskMapper) {
         this.taskRepository = taskRepository;
@@ -30,11 +32,15 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     @Override
-    public TaskDto createTask(TaskCreateRequest taskRequest) {
+    public TaskResponse createTask(TaskCreateRequest taskRequest) {
+
+        if(taskRepository.existsByTaskId(taskRequest.getTaskId())) {
+            throw new TaskAlreadyExistException("Task already exists with this task id");
+        }
 
         TaskEntity taskEntity = TaskEntity.builder()
+                .taskId(taskRequest.getTaskId())
                 .name(taskRequest.getName())
-                .problemId(taskRequest.getProblemId())
                 .description(taskRequest.getDescription())
                 .taskType(taskRequest.getTaskType())
                 .taskDifficulty(taskRequest.getTaskDifficulty())
@@ -46,19 +52,23 @@ public class TaskServiceImpl implements TaskService {
                 .build();
 
         taskRepository.save(taskEntity);
-        return taskMapper.toDto(taskEntity);
+        return TaskResponse.builder()
+                .taskId(taskRequest.getTaskId())
+                .message("Task created successfully with " + taskRequest.getTaskId())
+                .error(null)
+                .build();
     }
 
     @Transactional
     @Override
-    public TaskResponse updateTask(TaskUpdateRequest request) {
+    public TaskResponse updateTask(String taskId, TaskUpdateRequest request) {
+        TaskEntity taskEntity = taskRepository.findByTaskId(taskId);
+        if(taskEntity == null) {
+            throw  new TaskNotFoundException(taskId);
+        }
 
-        TaskEntity taskEntity = taskRepository.findById(request.getTaskId())
-                .orElseThrow(() -> new TaskNotFoundException(request.getTaskId()));
-
-        // update fields selectively
         taskEntity.setName(request.getName());
-        taskEntity.setProblemId(request.getProblemId());
+//        taskEntity.setTaskId(request.getProblemId());
         taskEntity.setDescription(request.getDescription());
         taskEntity.setTaskType(request.getTaskType());
         taskEntity.setTaskDifficulty(request.getTaskDifficulty());
@@ -69,59 +79,54 @@ public class TaskServiceImpl implements TaskService {
         taskEntity.setNotes(request.getNotes());
 
         taskRepository.save(taskEntity);
-
         return TaskResponse.builder()
-                .taskId(taskEntity.getId())
+                .taskId(taskEntity.getTaskId())
                 .message("Task updated successfully")
                 .error(null)
                 .build();
     }
 
     @Override
-    public TaskDto getTask(Long taskId) {
-
-        TaskEntity taskEntity = taskRepository.findById(taskId)
-                .orElseThrow(() -> new TaskNotFoundException(taskId));
-
+    public TaskDto getTask(String taskId) {
+        TaskEntity taskEntity = taskRepository.findByTaskId(taskId);
+        if(taskEntity == null) {
+            throw new TaskNotFoundException(taskId);
+        }
         return taskMapper.toDto(taskEntity);
     }
 
+    @Transactional
     @Override
-    public void deleteTask(Long taskId) {
-
-        if(!taskRepository.existsById(taskId)) {
+    public void deleteTask(String taskId) {
+        if(!taskRepository.existsByTaskId(taskId)) {
             throw new TaskNotFoundException(taskId);
         }
-        taskRepository.deleteById(taskId);
+        taskRepository.deleteByTaskId(taskId);
     }
 
     @Override
     public List<TaskDto> getAllTasksByTypeAndStatus(TaskType type, TaskStatus status) {
-
-        List<TaskEntity> entities = taskRepository.findAllByTaskStatusAndTaskType(type, status);
-
+        List<TaskEntity> entities = taskRepository.findAllByTaskTypeAndTaskStatus(type, status);
+        if(entities.isEmpty()) {
+            throw new TaskListNotFoundException(type, status);
+        }
         List<TaskDto> taskDtoList = new ArrayList<>();
         for(TaskEntity entity: entities) {
             taskDtoList.add(taskMapper.toDto(entity));
         }
-
         return taskDtoList;
     }
 
     @Override
     public List<TaskDto> getTaskByType(TaskType type) {
-
         List<TaskEntity> entities = taskRepository.findAllTaskByTaskType(type);
-
         if(entities.isEmpty()) {
             throw new TaskNotFoundException();
         }
-
         List<TaskDto> taskDtoList = new ArrayList<>();
         for(TaskEntity entity: entities) {
             taskDtoList.add(taskMapper.toDto(entity));
         }
-
         return taskDtoList;
     }
 }

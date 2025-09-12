@@ -1,21 +1,25 @@
 package com.vikku.taskplanner.taskservice.exceptions;
 
-import com.vikku.taskplanner.taskservice.model.enums.TaskType;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.io.Serial;
 
+@ResponseStatus(HttpStatus.NOT_FOUND)
 public class TaskNotFoundException extends RuntimeException {
 
     @Serial
-    public static Long serialVersionId = -12328292919L;
+    private static final long serialVersionUID = -6022779915715111661L;
 
-    public static String DEFAULT_MESSAGE = "Task not found in database";
+    public static final HttpStatus STATUS = HttpStatus.NOT_FOUND;
+
+    public static final String DEFAULT_MESSAGE = "Task not found in database";
 
     public TaskNotFoundException() {
         super(DEFAULT_MESSAGE);
     }
 
-    public TaskNotFoundException(Long taskId) {
-        super(taskId + " " + DEFAULT_MESSAGE);
+    public TaskNotFoundException(final String taskId) {
+        super("Task with id " + taskId + " not found in database");
     }
 }

@@ -15,6 +15,13 @@ public class TaskMapper implements BaseMapper<TaskDto, TaskEntity> {
 
     @Override
     public TaskDto toDto(TaskEntity entity) {
-        return null;
+        return TaskDto.builder()
+                .name(entity.getName())
+                .description(entity.getDescription())
+                .taskType(entity.getTaskType())
+                .taskDifficulty(entity.getTaskDifficulty())
+                .taskStaus(entity.getTaskStatus())
+                .url(entity.getUrl())
+                .build();
     }
 }

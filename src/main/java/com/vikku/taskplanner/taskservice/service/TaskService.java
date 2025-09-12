@@ -11,13 +11,13 @@ import java.util.List;
 
 public interface TaskService {
 
-    TaskDto createTask(TaskCreateRequest taskRequest);
+    TaskResponse createTask(TaskCreateRequest taskRequest);
 
-    TaskResponse updateTask(TaskUpdateRequest updateTaskRequest);
+    TaskResponse updateTask(String taskId, TaskUpdateRequest updateTaskRequest);
 
-    TaskDto getTask(Long taskId);
+    TaskDto getTask(String taskId);
 
-    void deleteTask(Long taskId);
+    void deleteTask(String taskId);
 
     List<TaskDto> getAllTasksByTypeAndStatus(TaskType type, TaskStatus status);
 

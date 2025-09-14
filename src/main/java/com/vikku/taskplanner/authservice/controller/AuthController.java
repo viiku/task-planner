@@ -58,25 +58,4 @@ public class AuthController {
     public ResponseEntity<?> logoutAllDevices(HttpServletRequest request) {
         return ResponseEntity.ok(refreshTokenService.logoutFromAllServices(request));
     }
-
-//
-//    @PostMapping("/refresh-token")
-//    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest requestToken) {
-//
-//        RefreshTokenEntity refreshToken = refreshTokenRepository.findByRefreshToken(requestToken.getToken())
-//                .orElseThrow(() -> new InvalidRefreshTokenException("Invalid refresh token"));
-//
-//        refreshTokenService.verifyExpiration(refreshToken);
-//
-//        String newToken = jwtService.generateToken(refreshToken.getUser());
-//        return ResponseEntity.ok(Map.of("accessToken", newToken));
-//    }
-//
-//    @PostMapping("/logout")
-//    public ResponseEntity<?> logout(@RequestBody TokenInvalidateRequest tokenInvalidateRequest) {
-//
-//        LogoutResponse response = logoutService.logout(tokenInvalidateRequest);
-//        return ResponseEntity.ok(response);
-//    }
-
 }

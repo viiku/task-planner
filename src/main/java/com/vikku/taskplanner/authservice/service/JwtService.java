@@ -1,16 +1,27 @@
 package com.vikku.taskplanner.authservice.service;
 
+import com.vikku.taskplanner.authservice.model.entity.BlackListedTokenEntity;
+import com.vikku.taskplanner.authservice.repository.BlacklistedTokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
@@ -24,19 +35,25 @@ public class JwtService {
     @Value("${spring.app.jwtRefreshExpirationMs}")
     private int jwtRefreshExpirationMs;
 
+    private final BlacklistedTokenRepository blacklistedTokenRepository;
+
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
     public String generateJwtToken(CustomUserDetails userDetails) {
-        return generateJwtTokenFromUsername(userDetails.getUsername(), jwtExpirationMs);
+        return generateTokenFromUsername(userDetails.getUsername(), jwtExpirationMs);
+    }
+
+    public String generateRefreshTokenValue() {
+        return generateTokenFromUsername(UUID.randomUUID().toString(), jwtRefreshExpirationMs);
     }
 
     public String generateRefreshToken(CustomUserDetails userDetails) {
-        return generateJwtTokenFromUsername(userDetails.getUsername(), jwtRefreshExpirationMs);
+        return generateTokenFromUsername(userDetails.getUsername(), jwtRefreshExpirationMs);
     }
 
-    private String generateJwtTokenFromUsername(String username, int expirationMs) {
+    private String generateTokenFromUsername(String username, int expirationMs) {
         Date expirationDate = new Date(System.currentTimeMillis() + expirationMs);
         return Jwts.builder()
                 .setSubject(username)
@@ -55,8 +72,31 @@ public class JwtService {
                 .getSubject();
     }
 
+    public String getTokenId(String token) {
+        return Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getId();
+    }
+
+    public Date getExpirationDateFromJwtToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
+    }
+
     public boolean validateJwtToken(String authToken) {
         try {
+            if(isTokenBlacklisted(authToken)) {
+                logger.error("Token is blacklisted");
+                return false;
+            }
+
             Jwts.parser().setSigningKey(getSigningKey()).build().parseClaimsJws(authToken);
             return true;
         } catch (SignatureException e) {
@@ -73,12 +113,43 @@ public class JwtService {
         return false;
     }
 
-    public Date getExpirationDateFromJwtToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getExpiration();
+    public boolean isTokenBlacklisted(String token) {
+        String tokenHash = generateTokenHash(token);
+        return blacklistedTokenRepository.existsByTokenHash(tokenHash);
+    }
+
+    public void blacklistToken(String token, String reason) {
+        try {
+            Date expirationDate = getExpirationDateFromJwtToken(token);
+            String tokenHash = generateTokenHash(token);
+
+            BlackListedTokenEntity blacklistedToken = BlackListedTokenEntity.builder()
+                    .tokenHash(tokenHash)
+                    .expiryDate(expirationDate.toInstant())
+                    .reason(reason)
+                    .build();
+
+            blacklistedTokenRepository.save(blacklistedToken);
+        } catch (Exception e) {
+            logger.error("Error blacklisting token: {}", e.getMessage());
+        }
+    }
+
+    private String generateTokenHash(String token) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(token.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 algorithm not available", e);
+        }
+    }
+
+    public String parseJwt(HttpServletRequest request) {
+        String headerAuth = request.getHeader("Authorization");
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            return headerAuth.substring(7);
+        }
+        return null;
     }
 }

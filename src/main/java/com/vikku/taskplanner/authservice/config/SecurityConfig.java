@@ -74,7 +74,8 @@ public class SecurityConfig {
                                         "/swagger-resources/**",
                                         "/webjars/**"
                                 ).permitAll()
-                                .requestMatchers("/auth/register", "/auth/login", "/auth/refresh-token", "/auth/logout").permitAll()
+                                .requestMatchers("/auth/signup", "/auth/signin", "/auth/refresh-token").permitAll()
+                                .requestMatchers("/auth/logout", "/auth/logout-all-devices").authenticated()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/api/public/**").permitAll()
                                 .requestMatchers("/actuator/health").permitAll()

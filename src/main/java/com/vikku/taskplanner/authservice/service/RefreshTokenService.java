@@ -41,6 +41,9 @@ public class RefreshTokenService {
         RefreshTokenEntity refreshTokenEntity = refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new RefreshTokenNotFoundException(refreshToken));
 
+        // Verify expiration of refresh token
+        verifyExpiration(refreshTokenEntity);
+
         UserEntity user = refreshTokenEntity.getUser();
         CustomUserDetails userDetails = new CustomUserDetails(user);
         String token = jwtService.generateJwtToken(userDetails);
@@ -71,7 +74,7 @@ public class RefreshTokenService {
         } catch (Exception e) {
             logger.error("Error during logout: {}", e.getMessage());
             return LogoutResponse.builder()
-                    .message("Logout completed!")
+                    .message("Logout failed due to some error!")
                     .build();
         }
     }
@@ -104,32 +107,33 @@ public class RefreshTokenService {
         }
     }
 
-    public RefreshTokenEntity createRefreshToken(Long userId) {
+    @Transactional
+    public void createRefreshToken(Long userId, String refreshToken) {
         // Revoke existing tokens for security (optional - depends on your requirements)
         refreshTokenRepository.revokeAllUserTokens(userId);
-
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        RefreshTokenEntity refreshToken = RefreshTokenEntity.builder()
-                .user(user)
-                .token(jwtService.generateRefreshTokenValue())
+        RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
+                .token(refreshToken)
                 .expiryDate(Instant.now().plusMillis(refreshTokenDurationMs))
+                .createdDate(Instant.now())
+                .user(user)
+                .revoked(false)
                 .build();
 
-        return refreshTokenRepository.save(refreshToken);
+        refreshTokenRepository.save(refreshTokenEntity);
     }
 
     public Optional<RefreshTokenEntity> findByToken(String token) {
         return refreshTokenRepository.findByTokenAndRevokedFalse(token);
     }
 
-    public RefreshTokenEntity verifyExpiration(RefreshTokenEntity token) {
+    public void verifyExpiration(RefreshTokenEntity token) {
         if (token.isExpired() || token.isRevoked()) {
             refreshTokenRepository.delete(token);
             throw new TokenRefreshException(token.getToken());
         }
-        return token;
     }
 
     @Transactional

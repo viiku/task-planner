@@ -2,7 +2,6 @@ package com.vikku.taskplanner.authservice.config;
 
 import com.vikku.taskplanner.authservice.filter.AuthEntryPointJwt;
 import com.vikku.taskplanner.authservice.filter.AuthTokenFilter;
-import com.vikku.taskplanner.authservice.service.CustomUserDetails;
 import com.vikku.taskplanner.authservice.service.CustomUserDetailsService;
 import com.vikku.taskplanner.authservice.service.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -67,15 +66,14 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers(
+                        auth.requestMatchers(
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",
                                         "/swagger-resources/**",
                                         "/webjars/**"
                                 ).permitAll()
-                                .requestMatchers("/auth/signup", "/auth/signin", "/auth/refresh-token").permitAll()
-                                .requestMatchers("/auth/logout", "/auth/logout-all-devices").authenticated()
+                                .requestMatchers("/api/auth/signup", "/api/auth/signin", "/api/auth/refreshtoken").permitAll()
+                                .requestMatchers("/api/auth/logout", "/api/auth/logout-all-devices").authenticated()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/api/public/**").permitAll()
                                 .requestMatchers("/actuator/health").permitAll()

@@ -29,15 +29,16 @@ public class OpenApiConfig {
                                 .url("https://www.apache.org/licenses/LICENSE-2.0.html")))
                 .externalDocs(new ExternalDocumentation()
                         .description("Project GitHub Repository")
-                        .url("https://github.com/viiku/task-planner"))
-                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
-                .components(new io.swagger.v3.oas.models.Components()
-                        .addSecuritySchemes("bearerAuth",
-                                new SecurityScheme()
-                                        .name("Authorization")
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")
-                        ));
+                        .url("https://github.com/viiku/task-planner"));
+//                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+//                .components(new io.swagger.v3.oas.models.Components()
+//                        .addSecuritySchemes("bearerAuth",
+//                                new SecurityScheme()
+//                                        .name("Authorization")
+//                                        .type(SecurityScheme.Type.HTTP)
+//                                        .scheme("bearer")
+//                                        .bearerFormat("JWT")
+//                        )
+//                );
     }
 }

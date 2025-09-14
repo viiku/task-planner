@@ -34,6 +34,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
 
     public SignupResponse signup(SignupRequest signupRequest) {
@@ -73,7 +74,7 @@ public class AuthService {
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
             String jwt = jwtService.generateJwtToken(userDetails);
             String refreshToken = jwtService.generateRefreshToken(userDetails);
-
+            refreshTokenService.createRefreshToken(userDetails.getId(), refreshToken);
             // Update last login and reset failed attempts
             updateUserLoginSuccess(userDetails.getId());
 

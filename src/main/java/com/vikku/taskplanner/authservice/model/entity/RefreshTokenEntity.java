@@ -32,7 +32,7 @@ public class RefreshTokenEntity {
     private Instant expiryDate;
 
     @Column(name = "created_date", nullable = false)
-    private Instant createdDate;
+    private Instant createdDate = Instant.now();
 
     @Column(name = "is_revoked")
     private boolean revoked = false;

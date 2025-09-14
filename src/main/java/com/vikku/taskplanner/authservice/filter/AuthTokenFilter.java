@@ -30,7 +30,16 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
+        String path = request.getServletPath();
+        // Skip authentication filter for auth endpoints
+        if (path.startsWith("/api/auth/signin") || path.startsWith("/api/auth/signup") || path.startsWith("/api/auth/refresh-token")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
+
             String jwt = jwtService.parseJwt(request);
             if(jwt != null && jwtService.validateJwtToken(jwt)) {
                 String username = jwtService.getUsernameFromJwtToken(jwt);

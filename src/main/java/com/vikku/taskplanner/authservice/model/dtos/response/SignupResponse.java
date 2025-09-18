@@ -2,10 +2,12 @@ package com.vikku.taskplanner.authservice.model.dtos.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Setter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class SignupResponse {
     private String message;

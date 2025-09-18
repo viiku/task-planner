@@ -1,15 +1,12 @@
 spring:
   application:
     name: taskplanner
-    #logging.level.org.springframework=DEBUG
 
-  # Database connection
   datasource:
-    url: jdbc:postgresql://localhost:5432/task-planner
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://localhost:5432/task_planner
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
 
-  # JPA Configuration
   jpa:
     hibernate:
       ddl-auto: update
@@ -17,11 +14,15 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.PostgresPlusDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  # Security Configuration for demonstration purpose
-  # Make sure you don't pass secret key here
-  app:
-    jwtSecret: mySecretKey123456789012345678901234567890
-    jwtExpirationMs: 86400000 # 24 hours
-    jwtRefreshExpirationMs: 604800000 # 7 days
+#  logging:
+#    level:
+#      org.springframework: INFO
+#      org.hibernate.SQL: DEBUG
+#      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+app:
+  jwtSecret: ${JWT_SECRET:diccxFxb7GQABoDcN0EmqGvjMr6SBpAUfM7Lt+AdscE=}
+  jwtExpirationMs: 86400000 # 24 hours
+  jwtRefreshExpirationMs: 604800000 # 7 days

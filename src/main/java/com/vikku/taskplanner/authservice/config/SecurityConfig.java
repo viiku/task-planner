@@ -72,7 +72,7 @@ public class SecurityConfig {
                                         "/swagger-resources/**",
                                         "/webjars/**"
                                 ).permitAll()
-                                .requestMatchers("/api/auth/signup", "/api/auth/signin", "/api/auth/refreshtoken").permitAll()
+                                .requestMatchers("/api/auth/signup", "/api/auth/signin", "/api/auth/refreshtoken", "/error").permitAll()
                                 .requestMatchers("/api/auth/logout", "/api/auth/logout-all-devices").authenticated()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/api/public/**").permitAll()

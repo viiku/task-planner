@@ -31,17 +31,17 @@ public class AuthController {
     private final UserDetailsService userDetailsService;
     private final RefreshTokenService refreshTokenService;
 
-    @PostMapping(value = "/signup", produces = "application/json")
+    @PostMapping(path = "/signup", produces = "application/json")
     public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest signUpRequest) {
         return ResponseEntity.ok(authService.register(signUpRequest));
     }
 
-    @PostMapping(value = "/signin", produces = "application/json")
+    @PostMapping("/signin")
     public ResponseEntity<SigninResponse> signin(@Valid @RequestBody LoginRequest loginRequest) {
         return ResponseEntity.ok(authService.login(loginRequest));
     }
 
-    @PostMapping(value = "/refreshtoken", produces = "application/json")
+    @PostMapping("/refreshtoken")
     public ResponseEntity<?> refreshToken(@Valid @RequestBody TokenRefreshRequest tokenRefreshRequest) {
         return ResponseEntity.ok(refreshTokenService.refreshToken(tokenRefreshRequest.getRefreshToken()));
     }

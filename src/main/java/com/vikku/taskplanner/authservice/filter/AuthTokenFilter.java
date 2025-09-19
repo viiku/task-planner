@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -33,13 +32,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
         // Skip authentication filter for auth endpoints
-        if (path.startsWith("/api/auth/signin") || path.startsWith("/api/auth/signup") || path.startsWith("/api/auth/refresh-token")) {
+        if (path.startsWith("/api/auth/signin")
+                || path.startsWith("/api/auth/signup")
+                || path.startsWith("/api/auth/refreshtoken")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
-
             String jwt = jwtService.parseJwt(request);
             if(jwt != null && jwtService.validateJwtToken(jwt)) {
                 String username = jwtService.getUsernameFromJwtToken(jwt);
@@ -57,4 +57,5 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
+
 }

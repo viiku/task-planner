@@ -3,7 +3,7 @@ spring:
     name: taskplanner
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/task_planner
+    url: jdbc:postgresql://localhost:5432/task-planner
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
 
@@ -22,7 +22,7 @@ spring:
 #      org.hibernate.SQL: DEBUG
 #      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
-app:
-  jwtSecret: ${JWT_SECRET:diccxFxb7GQABoDcN0EmqGvjMr6SBpAUfM7Lt+AdscE=}
-  jwtExpirationMs: 86400000 # 24 hours
-  jwtRefreshExpirationMs: 604800000 # 7 days
+  app:
+    jwtSecret: ${JWT_SECRET:diccxFxb7GQABoDcN0EmqGvjMr6SBpAUfM7Lt+AdscE=}
+    jwtExpirationMs: 86400000 # 24 hours
+    jwtRefreshExpirationMs: 604800000 # 7 days

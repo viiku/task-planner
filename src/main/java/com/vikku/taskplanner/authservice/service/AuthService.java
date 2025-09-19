@@ -1,7 +1,6 @@
 package com.vikku.taskplanner.authservice.service;
 
 import com.vikku.taskplanner.authservice.exception.UserEmailAlreadyExistException;
-import com.vikku.taskplanner.authservice.exception.UserNameAlreadyTaken;
 import com.vikku.taskplanner.authservice.model.dtos.request.LoginRequest;
 import com.vikku.taskplanner.authservice.model.dtos.request.SignupRequest;
 import com.vikku.taskplanner.authservice.model.dtos.response.*;
@@ -37,11 +36,8 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
 
-    public SignupResponse signup(SignupRequest signupRequest) {
-        if (userRepository.existsByUsername(signupRequest.getUsername())) {
-            throw new UserNameAlreadyTaken(signupRequest.getUsername());
-        }
-
+    @Transactional
+    public SignupResponse register(SignupRequest signupRequest) {
         if (userRepository.existsByEmail(signupRequest.getEmail())) {
             throw new UserEmailAlreadyExistException(signupRequest.getEmail());
         }
@@ -63,7 +59,7 @@ public class AuthService {
                 .build();
     }
 
-    public SigninResponse signin(LoginRequest loginRequest) {
+    public SigninResponse login(LoginRequest loginRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(

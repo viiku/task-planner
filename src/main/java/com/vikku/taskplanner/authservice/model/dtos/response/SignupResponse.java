@@ -1,10 +1,8 @@
 package com.vikku.taskplanner.authservice.model.dtos.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+@Getter
 @Setter
 @Builder
 @NoArgsConstructor

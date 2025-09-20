@@ -36,3 +36,6 @@ build/
 /ui/dist
 /ui/package-lock.json
 /ui/node_modules
+
+### Deployment ###
+/deploy/.env

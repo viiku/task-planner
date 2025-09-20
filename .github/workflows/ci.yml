@@ -46,6 +46,11 @@ jobs:
           ls -la target || true
           ls -la ui/dist || true
 
+      - name: Print Docker image name
+        run: |
+          IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/task-planner:latest"
+          echo "Building Docker image: $IMAGE_NAME"
+
       - name: Build Docker image
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/task-planner:latest -f deploy/Dockerfile .
@@ -58,6 +63,12 @@ jobs:
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/task-planner:latest
+
+      - name: Pushed Docker images
+        run: |
+          IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/task-planner:latest"
+          echo "Docker images pushed successfully."
+          echo "$IMAGE_NAME"
 
       - name: Deploy
         run: echo "Deploy your app here (e.g., kubectl apply, ssh, etc.)"

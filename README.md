@@ -24,3 +24,8 @@ Notes:
 - All endpoints listed under `taskservice` in the collection require an Authorization header (Bearer token) in the examples. Replace with a valid JWT when calling the API.
 - Base URL used in the collection: http://localhost:8080
 - Paths with path parameters are shown using {param} notation.
+
+## Run this application
+
+```bash
+docker compose up

@@ -33,6 +33,9 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Ensure mvnw is executable
+        run: chmod +x ./mvnw
+
       - name: Build backend
         working-directory: .
         run: ./mvnw clean package -DskipTests

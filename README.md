@@ -26,6 +26,7 @@ Notes:
 - Paths with path parameters are shown using {param} notation.
 
 ## Run this application
-
 ```bash
+git clone git@github.com:viiku/task-planner.git
 docker compose up
+```

@@ -1,0 +1,385 @@
+{
+	"info": {
+		"_postman_id": "18e41c05-ea88-4be9-a3d4-51474ef8817b",
+		"name": "task-planner",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16543371"
+	},
+	"item": [
+		{
+			"name": "taskservice",
+			"item": [
+				{
+					"name": "createTask",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYnoiLCJpYXQiOjE3NTgyMDE3MjUsImV4cCI6MTc1ODI4ODEyNX0.3x-wWW8j0HKEoSo1hPls_b47Unq4CdnMtEDqtS9xxSI",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"taskId\": \"string\",\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"taskType\": \"BLOG_WRITING\",\n  \"taskDifficulty\": \"EASY\",\n  \"taskStatus\": \"PENDING\",\n  \"url\": \"string\",\n  \"notes\": \"string\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080//api/v1/tasks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"",
+								"api",
+								"v1",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getTasksByTypeAndStatus",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXYxIiwiaWF0IjoxNzU4MTk5MTMyLCJleHAiOjE3NTg4MDM5MzJ9.nhMze9NPXttTl-vve8sUj3vfgibtH1tVf09tyqo-WwQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/tasks?type=DSA_PRACTICE&status=IN_PROGRESS",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "DSA_PRACTICE"
+								},
+								{
+									"key": "status",
+									"value": "IN_PROGRESS"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getListOfTaskByType",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXYxIiwiaWF0IjoxNzU4MTk5MTMyLCJleHAiOjE3NTg4MDM5MzJ9.nhMze9NPXttTl-vve8sUj3vfgibtH1tVf09tyqo-WwQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/tasks/type?type=DSA_PRACTICE",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"tasks",
+								"type"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "DSA_PRACTICE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteTaskById",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXYxIiwiaWF0IjoxNzU4MTk5MTMyLCJleHAiOjE3NTg4MDM5MzJ9.nhMze9NPXttTl-vve8sUj3vfgibtH1tVf09tyqo-WwQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/tasks/{taskId}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"tasks",
+								"{taskId}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateTaskByTaskId",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXYxIiwiaWF0IjoxNzU4MTk5MTMyLCJleHAiOjE3NTg4MDM5MzJ9.nhMze9NPXttTl-vve8sUj3vfgibtH1tVf09tyqo-WwQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/tasks/{taskId}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"tasks",
+								"{taskId}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getTaskById",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXYxIiwiaWF0IjoxNzU4MTk5MTMyLCJleHAiOjE3NTg4MDM5MzJ9.nhMze9NPXttTl-vve8sUj3vfgibtH1tVf09tyqo-WwQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/tasks",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "authservice",
+			"item": [
+				{
+					"name": "signup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"aba\",\n  \"email\": \"aba@gmail.com\",\n  \"password\": \"aba\",\n  \"firstName\": \"aba\",\n  \"lastName\": \"aba\",\n  \"phoneNumber\": \"+1234567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/auth/signup",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signin",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"abz\",\n  \"password\": \"abz\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/auth/signin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh-token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYnoiLCJpYXQiOjE3NTgyNjUzNDMsImV4cCI6MTc1ODg3MDE0M30.d9zNT5Y2bjRQMzXIesgL8doWP1EDGOSyH_Hi4CkhhJ0\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/auth/refreshtoken",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"refreshtoken"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhYnoiLCJpYXQiOjE3NTgyNjU0MTcsImV4cCI6MTc1ODM1MTgxN30.xGVGuRbhK-r7hoXvTL1Bs3MS05VyXRlF72RS3q4PIws",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/auth/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logoutAllDevices",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXYiLCJpYXQiOjE3NTc4NTA1MjEsImV4cCI6MTc1ODQ1NTMyMX0.rMVK-jynsofkkGkpXHPXmBSTe-oNuzyafpJOc_36_E8",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/auth/logout-all-devices",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"auth",
+								"logout-all-devices"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

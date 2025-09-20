@@ -1,0 +1,60 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install frontend dependencies
+        working-directory: ./ui
+        run: npm install
+
+      - name: Build frontend
+        working-directory: ./ui
+        run: npm run build
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build backend
+        working-directory: .
+        run: ./mvnw clean package -DskipTests
+
+      - name: Verify build artifacts
+        run: |
+          echo "Listing target/ and ui/dist to ensure CI produced artifacts"
+          ls -la target || true
+          ls -la ui/dist || true
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/task-planner:latest -f deploy/Dockerfile .
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/task-planner:latest
+
+      - name: Deploy
+        run: echo "Deploy your app here (e.g., kubectl apply, ssh, etc.)"

@@ -6,12 +6,12 @@ services:
       POSTGRES_PASSWORD: taskpass
       POSTGRES_DB: taskdb
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data/pgdata
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
   app:
-    image: ${TASKPLANNER_IMAGE:vikku26/task-planner:latest}
+    image: ${TASKPLANNER_IMAGE:-vikku26/task-planner:latest}
     depends_on:
       - db
     environment:

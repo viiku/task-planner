@@ -16,6 +16,7 @@ import java.util.List;
 /**
  * Controller class for creating, updating, deleting tasks
  */
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/v1/tasks")
 public class TaskController {

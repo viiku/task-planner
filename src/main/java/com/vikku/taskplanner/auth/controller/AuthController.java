@@ -36,12 +36,12 @@ public class AuthController {
         return ResponseEntity.ok(authService.register(signUpRequest));
     }
 
-    @PostMapping(value = "/signin", produces = "application/json")
+    @PostMapping(value = "/login", produces = "application/json")
     public ResponseEntity<SigninResponse> signin(@Valid @RequestBody LoginRequest loginRequest) {
         return ResponseEntity.ok(authService.login(loginRequest));
     }
 
-    @PostMapping(value = "/refreshtoken", produces = "application/json")
+    @PostMapping(value = "/refresh-token", produces = "application/json")
     public ResponseEntity<?> refreshToken(@Valid @RequestBody TokenRefreshRequest tokenRefreshRequest) {
         return ResponseEntity.ok(refreshTokenService.refreshToken(tokenRefreshRequest.getRefreshToken()));
     }

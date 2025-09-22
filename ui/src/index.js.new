@@ -1,0 +1,414 @@
+// src/index.js - Complete refactored frontend
+import './styles.css';
+
+// =============================================================================
+// API CLIENT
+// =============================================================================
+class ApiClient {
+  constructor() {
+    this.baseUrl = '';
+  }
+
+  async request(url, options = {}) {
+    const config = {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      },
+      ...options
+    };
+
+    try {
+      const response = await fetch(this.baseUrl + url, config);
+      const data = await this.handleResponse(response);
+      return data;
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
+  }
+
+  async handleResponse(response) {
+    let data;
+    try {
+      data = await response.json();
+    } catch (e) {
+      data = {};
+    }
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        // Unauthorized - trigger logout
+        AppState.logout();
+        throw new Error('Session expired. Please login again.');
+      }
+      throw new Error(data.message || `HTTP ${response.status}`);
+    }
+
+    return data;
+  }
+
+  // Auth endpoints
+  signup = (data) => this.request('/auth/signup', { method: 'POST', body: JSON.stringify(data) });
+  login = (data) => this.request('/auth/login', { method: 'POST', body: JSON.stringify(data) });
+  logout = () => this.request('/auth/logout', { method: 'POST' });
+  logoutAll = () => this.request('/auth/logout-all-devices', { method: 'POST' });
+  refreshToken = () => this.request('/auth/refresh-token', { method: 'POST' });
+
+  // Task endpoints  
+  getTasks = () => this.request('/api/v1/tasks');
+  getTasksByType = (type) => this.request(`/api/v1/tasks/${encodeURIComponent(type)}`);
+  createTask = (data) => this.request('/api/v1/tasks', { method: 'POST', body: JSON.stringify(data) });
+  updateTask = (id, data) => this.request(`/api/v1/tasks/${encodeURIComponent(id)}`, { method: 'PUT', body: JSON.stringify(data) });
+  deleteTask = (id) => this.request(`/api/v1/tasks/${encodeURIComponent(id)}`, { method: 'DELETE' });
+}
+
+const api = new ApiClient();
+
+// =============================================================================
+// APPLICATION STATE
+// =============================================================================
+class ApplicationState {
+  constructor() {
+    this.state = {
+      // Auth state
+      isAuthenticated: false,
+      user: null,
+      
+      // UI state
+      currentView: 'auth', // 'auth', 'dashboard', 'tasks', 'profile'
+      loading: false,
+      
+      // Data state
+      tasks: [],
+      filteredTasks: [],
+      searchQuery: '',
+      statusFilter: '',
+      
+      // Notifications
+      notifications: []
+    };
+    
+    this.listeners = [];
+  }
+
+  // State management
+  setState(updates) {
+    this.state = { ...this.state, ...updates };
+    this.notifyListeners();
+  }
+
+  getState() {
+    return { ...this.state };
+  }
+
+  subscribe(listener) {
+    this.listeners.push(listener);
+    return () => {
+      this.listeners = this.listeners.filter(l => l !== listener);
+    };
+  }
+
+  notifyListeners() {
+    this.listeners.forEach(listener => listener(this.state));
+  }
+
+  // Auth actions
+  async login(username, password) {
+    try {
+      this.setState({ loading: true });
+      const result = await api.login({ username, password });
+      
+      this.setState({
+        isAuthenticated: true,
+        user: { username },
+        currentView: 'dashboard',
+        loading: false
+      });
+      
+      await this.loadTasks();
+      this.showNotification('Login successful!', 'success');
+      return result;
+    } catch (error) {
+      this.setState({ loading: false });
+      this.showNotification(error.message, 'error');
+      throw error;
+    }
+  }
+
+  async signup(data) {
+    try {
+      this.setState({ loading: true });
+      await api.signup(data);
+      this.setState({ 
+        loading: false,
+        currentView: 'login'
+      });
+      this.showNotification('Account created! Please login.', 'success');
+    } catch (error) {
+      this.setState({ loading: false });
+      this.showNotification(error.message, 'error');
+      throw error;
+    }
+  }
+
+  async logout() {
+    try {
+      await api.logout();
+    } catch (error) {
+      console.warn('Logout request failed:', error);
+    } finally {
+      this.setState({
+        isAuthenticated: false,
+        user: null,
+        currentView: 'login',
+        tasks: [],
+        filteredTasks: []
+      });
+      this.showNotification('Logged out successfully', 'info');
+    }
+  }
+
+  async logoutAllDevices() {
+    try {
+      await api.logoutAll();
+      this.setState({
+        isAuthenticated: false,
+        user: null,
+        currentView: 'login',
+        tasks: [],
+        filteredTasks: []
+      });
+      this.showNotification('Logged out from all devices', 'info');
+    } catch (error) {
+      this.showNotification(error.message, 'error');
+    }
+  }
+
+  async refreshToken() {
+    try {
+      await api.refreshToken();
+      this.showNotification('Session refreshed', 'success');
+    } catch (error) {
+      this.showNotification(error.message, 'error');
+      this.logout();
+    }
+  }
+
+  // UI actions
+  setView(view) {
+    this.setState({ currentView: view });
+  }
+
+  showNotification(message, type = 'info') {
+    const id = Date.now();
+    const notification = { id, message, type };
+    
+    this.setState({
+      notifications: [...this.state.notifications, notification]
+    });
+
+    setTimeout(() => {
+      this.setState({
+        notifications: this.state.notifications.filter(n => n.id !== id)
+      });
+    }, 5000);
+  }
+}
+
+const AppState = new ApplicationState();
+
+// =============================================================================
+// UI COMPONENTS
+// =============================================================================
+
+// Helper function to create elements
+function createElement(tag, attributes = {}, ...children) {
+  const element = document.createElement(tag);
+  
+  Object.entries(attributes).forEach(([key, value]) => {
+    if (key.startsWith('on') && typeof value === 'function') {
+      element.addEventListener(key.substring(2).toLowerCase(), value);
+    } else if (key === 'className') {
+      element.className = value;
+    } else {
+      element.setAttribute(key, value);
+    }
+  });
+  
+  children.forEach(child => {
+    if (typeof child === 'string' || typeof child === 'number') {
+      element.appendChild(document.createTextNode(child));
+    } else if (child && child.nodeType) {
+      element.appendChild(child);
+    }
+  });
+  
+  return element;
+}
+
+// Authentication Form Component
+function createAuthForm(state) {
+  const formContainer = createElement('div', { className: 'auth-container' });
+  const authForm = createElement('form', { 
+    className: 'auth-form',
+    onSubmit: async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData);
+      
+      try {
+        if (state.currentView === 'signup') {
+          if (!data.username || !data.email || !data.password) {
+            AppState.showNotification('Please fill in all required fields', 'error');
+            return;
+          }
+          await AppState.signup(data);
+          e.target.reset();
+        } else {
+          if (!data.username || !data.password) {
+            AppState.showNotification('Please fill in all fields', 'error');
+            return;
+          }
+          await AppState.login(data.username, data.password);
+        }
+      } catch (error) {
+        // Error handling is done in AppState methods
+      }
+    }
+  });
+  
+  // Form header
+  const formTitle = createElement('h2', {}, state.currentView === 'signup' ? 'Create Account' : 'Sign In');
+  authForm.appendChild(formTitle);
+
+  // Required fields
+  authForm.appendChild(createElement('div', { className: 'form-field' },
+    createElement('input', {
+      type: 'text',
+      name: 'username',
+      placeholder: 'Username',
+      required: true
+    })
+  ));
+
+  // Signup fields
+  if (state.currentView === 'signup') {
+    const signupFields = [
+      createElement('div', { className: 'form-field' },
+        createElement('input', {
+          type: 'email',
+          name: 'email',
+          placeholder: 'Email',
+          required: true
+        })
+      ),
+      createElement('div', { className: 'form-field' },
+        createElement('input', {
+          type: 'text',
+          name: 'firstName',
+          placeholder: 'First Name'
+        })
+      ),
+      createElement('div', { className: 'form-field' },
+        createElement('input', {
+          type: 'text',
+          name: 'lastName',
+          placeholder: 'Last Name'
+        })
+      ),
+      createElement('div', { className: 'form-field' },
+        createElement('input', {
+          type: 'tel',
+          name: 'phoneNumber',
+          placeholder: 'Phone Number'
+        })
+      )
+    ];
+
+    signupFields.forEach(field => authForm.appendChild(field));
+  }
+
+  authForm.appendChild(createElement('div', { className: 'form-field' },
+    createElement('input', {
+      type: 'password',
+      name: 'password',
+      placeholder: 'Password',
+      required: true
+    })
+  ));
+
+  // Buttons
+  const formButtons = createElement('div', { className: 'button-group' });
+  
+  formButtons.appendChild(createElement('button', {
+    type: 'submit',
+    className: 'primary-btn',
+    disabled: state.loading
+  }, state.loading ? 
+     (state.currentView === 'signup' ? 'Creating Account...' : 'Signing In...') : 
+     (state.currentView === 'signup' ? 'Create Account' : 'Sign In')
+  ));
+
+  formButtons.appendChild(createElement('button', {
+    type: 'button',
+    className: 'secondary-btn',
+    onClick: () => {
+      AppState.setState({ 
+        currentView: state.currentView === 'signup' ? 'login' : 'signup' 
+      });
+    }
+  }, state.currentView === 'signup' ? 
+     'Already have an account? Sign in' : 
+     'Need an account? Sign up'
+  ));
+
+  authForm.appendChild(formButtons);
+  formContainer.appendChild(authForm);
+  return formContainer;
+}
+
+// Main App Component
+function createApp(state) {
+  const app = createElement('div', { className: 'app' });
+
+  if (!state.isAuthenticated) {
+    app.appendChild(createAuthForm(state));
+    return app;
+  }
+
+  // Navigation and main content for authenticated users
+  app.appendChild(createNavigation(state));
+  
+  switch(state.currentView) {
+    case 'dashboard':
+      app.appendChild(createDashboard(state));
+      break;
+    case 'tasks':
+      app.appendChild(createTaskManager(state));
+      break;
+    case 'profile':
+      app.appendChild(createProfile(state));
+      break;
+  }
+  
+  return app;
+}
+
+// =============================================================================
+// APP INITIALIZATION
+// =============================================================================
+function render() {
+  const root = document.getElementById('app');
+  root.innerHTML = '';
+  root.appendChild(createApp(AppState.getState()));
+}
+
+// Subscribe to state changes
+AppState.subscribe(render);
+
+// Initialize app
+document.addEventListener('DOMContentLoaded', () => {
+  render();
+});

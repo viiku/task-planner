@@ -13,6 +13,8 @@ import com.vikku.taskplanner.taskservice.model.enums.TaskType;
 import com.vikku.taskplanner.taskservice.model.mappers.TaskMapper;
 import com.vikku.taskplanner.taskservice.repository.TaskRepository;
 import com.vikku.taskplanner.taskservice.service.TaskService;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -23,11 +25,15 @@ import java.util.List;
 public class TaskServiceImpl implements TaskService {
 
     private final TaskMapper taskMapper;
+    private final Counter taskCreatedCounter;
     private final TaskRepository taskRepository;
 
-    public TaskServiceImpl(TaskRepository taskRepository, TaskMapper taskMapper) {
+    public TaskServiceImpl(TaskRepository taskRepository, TaskMapper taskMapper, MeterRegistry registry) {
         this.taskRepository = taskRepository;
         this.taskMapper = taskMapper;
+        this.taskCreatedCounter = Counter.builder("task.created.count")
+                .description("Number of tasks created")
+                .register(registry);
     }
 
     @Transactional
@@ -52,6 +58,7 @@ public class TaskServiceImpl implements TaskService {
                 .build();
 
         taskRepository.save(taskEntity);
+        taskCreatedCounter.increment();
         return TaskResponse.builder()
                 .taskId(taskRequest.getTaskId())
                 .message("Task created successfully with " + taskRequest.getTaskId())

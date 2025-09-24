@@ -26,3 +26,13 @@ spring:
     jwtSecret: ${JWT_SECRET:diccxFxb7GQABoDcN0EmqGvjMr6SBpAUfM7Lt+AdscE=}
     jwtExpirationMs: 86400000 # 24 hours
     jwtRefreshExpirationMs: 604800000 # 7 days
+
+  management:
+    endpoints:
+      web:
+        base-path: /actuator
+        exposure:
+          include: health, metrics, prometheus
+    endpoint:
+      health:
+        show-details: always

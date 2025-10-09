@@ -59,7 +59,7 @@ public class AuthService {
                 .build();
     }
 
-    public SigninResponse login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequest loginRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -78,21 +78,17 @@ public class AuthService {
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
 
-            return SigninResponse.builder()
-                    .token(jwt)
+            return LoginResponse.builder()
+                    .accessToken(jwt)
                     .refreshToken(refreshToken)
-                    .type("Bearer")
-                    .id(userDetails.getId())
-                    .username(userDetails.getUsername())
-                    .email(userDetails.getEmail())
-                    .fullName(userDetails.getFullName())
-                    .roles(roles)
+                    .tokenType("Bearer")
+                    .expiresIn(122)
                     .message("User Logged in successfully")
                     .build();
 
         } catch (BadCredentialsException e) {
             handleFailedLogin(loginRequest.getUsername());
-            return SigninResponse.builder()
+            return LoginResponse.builder()
                     .message("Invalid username or password")
                     .build();
         }
@@ -122,5 +118,22 @@ public class AuthService {
             }
             userRepository.save(user);
         });
+    }
+
+    @Transactional
+    public CustomUserDetails registerOrFetchOAuthUser(String email, String name, String provider) {
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseGet(() -> {
+                    UserEntity newUser = new UserEntity();
+                    newUser.setEmail(email);
+                    newUser.setUsername(email.split("@")[0]);
+                    newUser.setFirstName(name);
+//                    newUser.setProvider(provider);
+                    newUser.setPassword(""); // no password for OAuth
+                    newUser.setStatus(UserStatus.ACTIVE);
+                    return userRepository.save(newUser);
+                });
+
+        return new CustomUserDetails(user);
     }
 }

@@ -1,7 +1,7 @@
 package com.vikku.taskplanner.auth.config;
 
 import com.vikku.taskplanner.auth.filter.AuthEntryPointJwt;
-import com.vikku.taskplanner.auth.filter.AuthTokenFilter;
+import com.vikku.taskplanner.auth.filter.JwtAuthTokenFilter;
 import com.vikku.taskplanner.auth.service.CustomUserDetailsService;
 import com.vikku.taskplanner.auth.service.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,8 +37,8 @@ public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
 
     @Bean
-    public AuthTokenFilter authenticationJwtTokenFilter() {
-        return new AuthTokenFilter(jwtService, userDetailsService);
+    public JwtAuthTokenFilter authenticationJwtTokenFilter() {
+        return new JwtAuthTokenFilter(jwtService, userDetailsService);
     }
 
     @Bean
@@ -62,8 +63,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // Disable CSRF (not needed for stateless JWT)
                 .csrf(csrf -> csrf.disable())
+                // if any exceptions comes, delegate it to AuthEntryPointJwt
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                //
+                .oauth2Login(Customizer.withDefaults())
+                // stateless session for jwt
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers(
@@ -73,8 +79,24 @@ public class SecurityConfig {
                                         "/webjars/**",
                                         "/actuator/**"
                                 ).permitAll()
-                                .requestMatchers("/api/auth/signup", "/api/auth/signin", "/api/auth/refreshtoken", "/error").permitAll()
-                                .requestMatchers("/api/auth/logout", "/api/auth/logout-all-devices").authenticated()
+                                .requestMatchers(
+                                        "/api/auth/signup",
+                                        "/api/auth/signin",
+                                        "/api/auth/refreshtoken"
+                                ).permitAll()
+                                .requestMatchers(
+                                        "/api/auth/logout",
+                                        "/api/auth/logout-all-devices"
+                                ).authenticated()
+                                .requestMatchers(
+                                        "/api/auth/oauth2/*"
+                                ).permitAll()
+                                .requestMatchers(
+                                        "/api/v1/tasks"
+                                ).authenticated()
+                                .requestMatchers(
+                                        "/api/auth/oauth2/**"
+                                ).permitAll()
                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/api/public/**").permitAll()
                                 .requestMatchers("/actuator/health").permitAll()
@@ -82,6 +104,18 @@ public class SecurityConfig {
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .requestMatchers("/api/manager/**").hasAnyRole("ADMIN", "MANAGER")
                                 .anyRequest().authenticated()
+//                                .and()
+//                                .oauth2Login()
+//                )
+//                .oauth2Login(oauth -> oauth
+//                        .authorizationEndpoint(authorization ->
+//                                authorization.baseUri("/api/auth/oauth2/authorize"))
+//                        .redirectionEndpoint(redirection ->
+//                                redirection.baseUri("/api/auth/oauth2/callback/**"))
+//                        .userInfoEndpoint(userInfo ->
+//                                userInfo.userService(customOAuth2UserService))
+//                        .successHandler(oAuth2SuccessHandler)
+//                        .failureHandler(oAuth2FailureHandler)
                 );
 
         http.authenticationProvider(authenticationProvider());
@@ -94,11 +128,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*", "https://*.yourdomain.com"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

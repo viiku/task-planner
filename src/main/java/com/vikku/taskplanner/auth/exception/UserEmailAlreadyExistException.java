@@ -21,6 +21,6 @@ public class UserEmailAlreadyExistException extends RuntimeException{
     }
 
     public UserEmailAlreadyExistException(final String email) {
-        super("User with email " + email  + "already exists in database");
+        super("User with email " + email  + " already exists in database");
     }
 }

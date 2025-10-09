@@ -27,8 +27,6 @@ public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     private final AuthService authService;
-    private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
     private final RefreshTokenService refreshTokenService;
 
     @PostMapping(value = "/signup", produces = "application/json")
@@ -36,24 +34,22 @@ public class AuthController {
         return ResponseEntity.ok(authService.register(signUpRequest));
     }
 
-    @PostMapping(value = "/login", produces = "application/json")
-    public ResponseEntity<SigninResponse> signin(@Valid @RequestBody LoginRequest loginRequest) {
+    @PostMapping(value = "/signin", produces = "application/json")
+    public ResponseEntity<LoginResponse> signin(@Valid @RequestBody LoginRequest loginRequest) {
         return ResponseEntity.ok(authService.login(loginRequest));
     }
 
-    @PostMapping(value = "/refresh-token", produces = "application/json")
+    @PostMapping(value = "/refreshtoken", produces = "application/json")
     public ResponseEntity<?> refreshToken(@Valid @RequestBody TokenRefreshRequest tokenRefreshRequest) {
         return ResponseEntity.ok(refreshTokenService.refreshToken(tokenRefreshRequest.getRefreshToken()));
     }
 
     @PostMapping("/logout")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> logoutUser(HttpServletRequest request) {
         return ResponseEntity.ok(refreshTokenService.logout(request));
     }
 
     @PostMapping("/logout-all-devices")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> logoutAllDevices(HttpServletRequest request) {
         return ResponseEntity.ok(refreshTokenService.logoutFromAllServices(request));
     }

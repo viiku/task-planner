@@ -32,4 +32,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Modifying
     @Query("UPDATE UserEntity u SET u.accountLockedUntil = :lockUntil WHERE u.id = :userId")
     void lockAccount(@Param("userId") Long userId, @Param("lockUntil") LocalDateTime lockUntil);
+
+    Optional<UserEntity> findByEmail(String email);
 }

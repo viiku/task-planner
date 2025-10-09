@@ -90,14 +90,14 @@ public class JwtService {
                 .getExpiration();
     }
 
-    public boolean validateJwtToken(String authToken) {
+    public boolean validateJwtToken(String jwtToken) {
         try {
-            if(isTokenBlacklisted(authToken)) {
+            if(isTokenBlacklisted(jwtToken)) {
                 logger.error("Token is blacklisted");
                 return false;
             }
 
-            Jwts.parser().setSigningKey(getSigningKey()).build().parseClaimsJws(authToken);
+            Jwts.parser().setSigningKey(getSigningKey()).build().parseClaimsJws(jwtToken);
             return true;
         } catch (SignatureException e) {
             logger.error("Invalid JWT signature: {}", e.getMessage());

@@ -18,6 +18,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/taskdb
       SPRING_DATASOURCE_USERNAME: taskuser
       SPRING_DATASOURCE_PASSWORD: taskpass
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,metrics,prometheus
+      MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED: "true"
     ports:
       - "8080:8080"
     restart: unless-stopped
@@ -47,3 +49,6 @@ services:
 
 volumes:
   db-data:
+  grafana-data:
+
+

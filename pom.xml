@@ -3,18 +3,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.vikku</groupId>
-    <artifactId>fooddelivery</artifactId>
+    <artifactId>taskplanner</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>fooddelivery</name>
-    <description>Case  Study: Food delivery microservice </description>
+    <name>taskplanner</name>
+    <description>Case  Study: Task Planner microservice </description>
     <modules>
-        <module>taskservice</module>
         <module>authservice</module>
+        <module>taskservice</module>
         <module>emailservice</module>
     </modules>
     <dependencyManagement>
         <dependencies>
+            <!-- Spring Boot dependency import -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -22,11 +23,13 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
     <properties>
         <java.version>21</java.version>
         <lombok.version>1.18.36</lombok.version>
+        <springdoc-openapi-starter-webmvc-ui.version>2.3.0</springdoc-openapi-starter-webmvc-ui.version>
     </properties>
 
 </project>

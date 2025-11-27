@@ -15,7 +15,6 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="/mnt/windows/windows_home/.m2/repository/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
-          <entry name="/mnt/windows/windows_home/.m2/repository/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
         </processorPath>
         <module name="taskplanner (1)" />
       </profile>

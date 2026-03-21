@@ -1,7 +1,7 @@
-package com.vikku.taskservice.taskservice.exceptions;
+package com.vikku.taskservice.exceptions;
 
-import com.vikku.taskservice.taskservice.model.enums.TaskStatus;
-import com.vikku.taskservice.taskservice.model.enums.TaskType;
+import com.vikku.taskservice.model.enums.TaskStatus;
+import com.vikku.taskservice.model.enums.TaskType;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 

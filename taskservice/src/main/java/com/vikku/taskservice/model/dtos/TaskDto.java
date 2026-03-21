@@ -1,8 +1,8 @@
-package com.vikku.taskservice.taskservice.model.dtos;
+package com.vikku.taskservice.model.dtos;
 
-import com.vikku.taskservice.taskservice.model.enums.TaskDifficulty;
-import com.vikku.taskservice.taskservice.model.enums.TaskStatus;
-import com.vikku.taskservice.taskservice.model.enums.TaskType;
+import com.vikku.taskservice.model.enums.TaskDifficulty;
+import com.vikku.taskservice.model.enums.TaskStatus;
+import com.vikku.taskservice.model.enums.TaskType;
 import lombok.*;
 
 @Getter

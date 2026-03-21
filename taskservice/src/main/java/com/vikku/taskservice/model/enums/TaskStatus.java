@@ -1,4 +1,4 @@
-package com.vikku.taskservice.taskservice.model.enums;
+package com.vikku.taskservice.model.enums;
 
 public enum TaskStatus {
     PENDING,

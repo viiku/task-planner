@@ -1,12 +1,12 @@
-package com.vikku.taskservice.taskservice.controllers;
+package com.vikku.taskservice.controllers;
 
-import com.vikku.taskservice.taskservice.model.dtos.TaskDto;
-import com.vikku.taskservice.taskservice.model.dtos.request.TaskCreateRequest;
-import com.vikku.taskservice.taskservice.model.dtos.request.TaskUpdateRequest;
-import com.vikku.taskservice.taskservice.model.dtos.response.TaskResponse;
-import com.vikku.taskservice.taskservice.model.enums.TaskStatus;
-import com.vikku.taskservice.taskservice.model.enums.TaskType;
-import com.vikku.taskservice.taskservice.service.TaskService;
+import com.vikku.taskservice.model.dtos.TaskDto;
+import com.vikku.taskservice.model.dtos.request.TaskCreateRequest;
+import com.vikku.taskservice.model.dtos.request.TaskUpdateRequest;
+import com.vikku.taskservice.model.dtos.response.TaskResponse;
+import com.vikku.taskservice.model.enums.TaskStatus;
+import com.vikku.taskservice.model.enums.TaskType;
+import com.vikku.taskservice.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

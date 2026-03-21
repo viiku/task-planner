@@ -1,10 +1,9 @@
-package com.vikku.taskservice.taskservice.repository;
+package com.vikku.taskservice.repository;
 
-import com.vikku.taskservice.taskservice.model.entities.TaskEntity;
-import com.vikku.taskservice.taskservice.model.enums.TaskStatus;
-import com.vikku.taskservice.taskservice.model.enums.TaskType;
+import com.vikku.taskservice.model.entities.TaskEntity;
+import com.vikku.taskservice.model.enums.TaskStatus;
+import com.vikku.taskservice.model.enums.TaskType;
 import jakarta.transaction.Transactional;
-import org.hibernate.sql.model.ast.builder.TableUpdateBuilderSkipped;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

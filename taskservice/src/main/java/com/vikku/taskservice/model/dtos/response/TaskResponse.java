@@ -1,4 +1,4 @@
-package com.vikku.taskservice.taskservice.model.dtos.response;
+package com.vikku.taskservice.model.dtos.response;
 
 import lombok.*;
 

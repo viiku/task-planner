@@ -1,8 +1,8 @@
-package com.vikku.taskservice.taskservice.model.mappers;
+package com.vikku.taskservice.model.mappers;
 
 import com.vikku.taskservice.common.model.mapper.BaseMapper;
-import com.vikku.taskservice.taskservice.model.dtos.TaskDto;
-import com.vikku.taskservice.taskservice.model.entities.TaskEntity;
+import com.vikku.taskservice.model.dtos.TaskDto;
+import com.vikku.taskservice.model.entities.TaskEntity;
 import org.springframework.stereotype.Component;
 
 @Component

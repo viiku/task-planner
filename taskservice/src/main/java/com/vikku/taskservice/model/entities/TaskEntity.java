@@ -1,10 +1,10 @@
-package com.vikku.taskservice.taskservice.model.entities;
+package com.vikku.taskservice.model.entities;
 
 
 import com.vikku.taskservice.common.model.entity.BaseEntity;
-import com.vikku.taskservice.taskservice.model.enums.TaskDifficulty;
-import com.vikku.taskservice.taskservice.model.enums.TaskStatus;
-import com.vikku.taskservice.taskservice.model.enums.TaskType;
+import com.vikku.taskservice.model.enums.TaskDifficulty;
+import com.vikku.taskservice.model.enums.TaskStatus;
+import com.vikku.taskservice.model.enums.TaskType;
 import jakarta.persistence.*;
 import lombok.*;
 

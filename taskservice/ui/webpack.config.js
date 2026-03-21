@@ -9,7 +9,9 @@ module.exports = (env, argv) => {
     entry: path.resolve(__dirname, 'src', 'index.js'),
     output: {
       path: path.resolve(__dirname, 'dist'),
-      filename: isProduction ? '[name].[contenthash].js' : 'bundle.js',
+  filename: isProduction ? '[name].[contenthash].js' : '[name].js',
+  // ensure chunk filenames are unique in dev to avoid collisions
+  chunkFilename: isProduction ? '[name].[contenthash].js' : '[name].js',
       clean: true,
       publicPath: '/'
     },
